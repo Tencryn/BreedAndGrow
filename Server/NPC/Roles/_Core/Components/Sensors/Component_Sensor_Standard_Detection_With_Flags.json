@@ -1,0 +1,141 @@
+{
+  "Type": "Component",
+  "Class": "Sensor",
+  "Parameters": {
+    "ViewRange": {
+      "Value": 10,
+      "Description": "The range from which the target will be seen. If zero, sight will be disabled."
+    },
+    "ViewSector": {
+      "Value": 120,
+      "Description": "The view sector within which the target needs to be to be seen"
+    },
+    "HearingRange": {
+      "Value": 10,
+      "Description": "The range from which the target will be heard. If zero, hearing will be disabled."
+    },
+    "AbsoluteDetectionRange": {
+      "Value": 2,
+      "Description": "The range at which a target is guaranteed to be detected. If zero, abosulte detection will be disabled."
+    },
+    "ThroughWalls": {
+      "Value": true,
+      "Description": "Whether the NPC can hear the target through obstacles"
+    },
+    "Attitudes": {
+      "Value": [ "Hostile", "Revered", "Friendly", "Neutral", "Ignore" ],
+      "Description": "A prioritised list of attitudes to respond to"
+    },
+    "IncludeGroups": {
+      "Value": [ "Self" ],
+      "TypeHint": "String",
+      "Description": "Groups to include"
+    },
+    "Flag": {
+      "Description": "Flag that is required",
+      "TypeHint": "String",
+      "Value": "Undefined"
+    }
+  },
+  "Content": {
+    "Type": "Or",
+    "Sensors": [
+      {
+        "Type": "Mob",
+        "Enabled": { "Compute": "AbsoluteDetectionRange > 0" },
+        "ExcludeOwnType": false,
+        "LockOnTarget": true,
+        "Range": { "Compute": "AbsoluteDetectionRange" },
+        "Filters": [
+          {
+            "Type": "NPCGroup",
+            "Enabled": { "Compute": "!isEmptyStringArray(IncludeGroups)" },
+            "IncludeGroups": { "Compute": "IncludeGroups" }
+          },
+          {
+            "Type": "Flag",
+            "Name": { "Compute": "Flag" },
+            "Set": true
+          }
+        ],
+        "Prioritiser": {
+          "Type": "Attitude",
+          "AttitudesByPriority": { "Compute": "Attitudes" }
+        },
+        "Collector": {
+          "Type": "CombatTargets"
+        }
+      },
+      {
+        "Type": "Mob",
+        "Enabled": { "Compute": "ViewRange > 0" },
+        "ExcludeOwnType": false,
+        "LockOnTarget": true,
+        "Range": { "Compute": "ViewRange" },
+        "Filters": [
+          {
+            "Type": "LineOfSight"
+          },
+          {
+            "Type": "NPCGroup",
+            "Enabled": { "Compute": "!isEmptyStringArray(IncludeGroups)" },
+            "IncludeGroups": { "Compute": "IncludeGroups" }
+          },
+          {
+            "Type": "ViewSector",
+            "ViewSector": { "Compute": "ViewSector" }
+          },
+          {
+            "Type": "Flag",
+            "Name": { "Compute": "Flag" },
+            "Set": true
+          }
+        ],
+        "Prioritiser": {
+          "Type": "Attitude",
+          "AttitudesByPriority": { "Compute": "Attitudes" }
+        },
+        "Collector": {
+          "Type": "CombatTargets"
+        }
+      },
+      {
+        "Type": "Mob",
+        "Enabled": { "Compute": "HearingRange > 0" },
+        "ExcludeOwnType": false,
+        "LockOnTarget": true,
+        "Range": { "Compute": "HearingRange" },
+        "Filters": [
+          {
+            "Enabled": { "Compute": "!ThroughWalls" },
+            "Type": "LineOfSight"
+          },
+          {
+            "Type": "NPCGroup",
+            "Enabled": { "Compute": "!isEmptyStringArray(IncludeGroups)" },
+            "IncludeGroups": { "Compute": "IncludeGroups" }
+          },
+          {
+            "Type": "Not",
+            "Filter": {
+              "Type": "MovementState",
+              "State": "Crouching"
+            }
+          },
+          {
+            "Type": "Flag",
+            "Name": { "Compute": "Flag" },
+            "Set": true
+          }
+        ],
+        "Prioritiser": {
+          "Type": "Attitude",
+          "AttitudesByPriority": { "Compute": "Attitudes" }
+        },
+        "Collector": {
+          "Type": "CombatTargets"
+        }
+      }
+    ]
+  }
+}

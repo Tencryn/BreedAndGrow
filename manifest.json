@@ -1,0 +1,17 @@
+{
+  "Group": "Tencryn",
+  "Name": "BreedAndGrow",
+  "Version": "1.0.0",
+  "Description": "",
+  "Authors": [],
+  "Website": "",
+  "ServerVersion": "2026.03.26-92489d5e7",
+  "Dependencies": {
+    "Tencryn:NPCExtras": "*"
+  },
+  "OptionalDependencies": {},
+  "LoadBefore": {},
+  "DisabledByDefault": false,
+  "IncludesAssetPack": false,
+  "SubPlugins": []
+}
